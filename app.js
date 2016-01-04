@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var stockRepository = require('./stockRepository')();
 
 function logRequest(req, res, next) {
     console.log('incoming request logged at ' + new Date());
@@ -22,29 +23,21 @@ var collection = MongoClient.connect(url).then(function (db) {
 });
 
 app.get('/stock', function (req, res) {
-    collection.
-        then(function (collection) {
-            return collection.find({}).toArray();
-        }).
-        then(function (books) {
-            res.json(books);
-        });
+    stockRepository.findAll().then(function (books) {
+        res.json(books);
+    }).catch(function (err) {
+        console.error(err.stack);
+        res.status(500).json({error: "Can't read the stock right now. Try again later."});
+    });
 });
 
 app.post('/stock', function (req, res) {
-    collection.
-        then(function (collection) {
-            //throw new Error("asdfdsaf");
-            return collection.updateOne({isbn: req.body.isbn}, {
-                isbn: req.body.isbn,
-                count: req.body.count
-            }, {upsert: true});
-        }).
-        then(function (result) {
+    stockRepository.stockUp(req.body.isbn, req.body.count)
+        .then(function (result) {
             res.json({isbn: req.body.isbn, count: req.body.count});
         }).catch(function (err) {
             console.error(err.stack);
-            res.status(500).json({error: "Can't read the stock right now. Try again later."});
+            res.status(500).json({error: "Can't stock up right now. Try again later."});
         });
 });
 
