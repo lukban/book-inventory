@@ -15,13 +15,6 @@ app.get('/', function (req, res) {
     res.send('Hello World!');
 });
 
-var collection = null;
-var url = 'mongodb://localhost:27017/book_inventory_service';
-var MongoClient = require('mongodb').MongoClient;
-var collection = MongoClient.connect(url).then(function (db) {
-    return db.collection('books');
-});
-
 app.get('/stock', function (req, res) {
     stockRepository.findAll().then(function (books) {
         res.json(books);
