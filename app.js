@@ -22,22 +22,30 @@ var collection = MongoClient.connect(url).then(function (db) {
 });
 
 app.get('/stock', function (req, res) {
-    collection.then(function (collection) {
-        return collection.find({}).toArray();
-    }).then(function (books) {
-        res.json(books);
-    });
+    collection.
+        then(function (collection) {
+            return collection.find({}).toArray();
+        }).
+        then(function (books) {
+            res.json(books);
+        });
 });
 
 app.post('/stock', function (req, res) {
-    collection.then(function (collection) {
-        return collection.updateOne({isbn: req.body.isbn}, {
-            isbn: req.body.isbn,
-            count: req.body.count
-        }, {upsert: true});
-    }).then(function (result) {
-        res.json({isbn: req.body.isbn, count: req.body.count});
-    });
+    collection.
+        then(function (collection) {
+            //throw new Error("asdfdsaf");
+            return collection.updateOne({isbn: req.body.isbn}, {
+                isbn: req.body.isbn,
+                count: req.body.count
+            }, {upsert: true});
+        }).
+        then(function (result) {
+            res.json({isbn: req.body.isbn, count: req.body.count});
+        }).catch(function (err) {
+            console.error(err.stack);
+            res.status(500).json({error: "Can't read the stock right now. Try again later."});
+        });
 });
 
 app.use(clientError);
