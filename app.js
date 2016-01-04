@@ -14,8 +14,32 @@ app.get('/', function (req, res) {
     res.send('Hello World!');
 });
 
-app.post('/stock', function(req, res) {
-    res.json({isbn: req.body.isbn, count: req.body.count});
+app.get('/stock', function(req, res) {
+    var MongoClient = require('mongodb').MongoClient;
+
+    var url = 'mongodb://localhost:27017/book_inventory_service';
+    MongoClient.connect(url, function (err, db) {
+        return db.collection('books').find({}).toArray(function(err, docs) {
+            res.json(docs);
+        });
+    });
+});
+
+app.post('/stock', function (req, res) {
+    var isbn = req.body.isbn;
+    var count = req.body.count;
+
+    var MongoClient = require('mongodb').MongoClient;
+
+    var url = 'mongodb://localhost:27017/book_inventory_service';
+    MongoClient.connect(url, function (err, db) {
+        console.log("Connected correctly to server");
+        db.collection('books').updateOne({isbn: isbn}, {
+            isbn: isbn,
+            count: count
+        }, {upsert: true});
+    });
+    res.json({isbn: isbn, count: count});
 });
 
 app.use(clientError);
