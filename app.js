@@ -17,34 +17,27 @@ app.get('/', function (req, res) {
 var collection = null;
 var url = 'mongodb://localhost:27017/book_inventory_service';
 var MongoClient = require('mongodb').MongoClient;
-MongoClient.connect(url, function (err, db) {
-    collection = db.collection('books');
-
-    //setTimeout(() => {collection = db.collection('books')}, 10000);
-
-    // better option: app.get, app.post registration goes here
+var collection = MongoClient.connect(url).then(function (db) {
+    return db.collection('books');
 });
 
 app.get('/stock', function (req, res) {
-    return collection.find({}).toArray(function (err, docs) {
-        res.json(docs);
+    collection.then(function (collection) {
+        return collection.find({}).toArray();
+    }).then(function (books) {
+        res.json(books);
     });
 });
 
 app.post('/stock', function (req, res) {
-    var isbn = req.body.isbn;
-    var count = req.body.count;
-
-    collection.updateOne(
-        {isbn: isbn},
-        {
-            isbn: isbn,
-            count: count
-        },
-        {upsert: true});
-
-
-    res.json({isbn: isbn, count: count});
+    collection.then(function (collection) {
+        return collection.updateOne({isbn: req.body.isbn}, {
+            isbn: req.body.isbn,
+            count: req.body.count
+        }, {upsert: true});
+    }).then(function (result) {
+        res.json({isbn: req.body.isbn, count: req.body.count});
+    });
 });
 
 app.use(clientError);
