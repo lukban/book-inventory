@@ -19,6 +19,10 @@ var url = 'mongodb://localhost:27017/book_inventory_service';
 var MongoClient = require('mongodb').MongoClient;
 MongoClient.connect(url, function (err, db) {
     collection = db.collection('books');
+
+    //setTimeout(() => {collection = db.collection('books')}, 10000);
+
+    // better option: app.get, app.post registration goes here
 });
 
 app.get('/stock', function (req, res) {
