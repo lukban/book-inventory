@@ -1,6 +1,13 @@
 var express = require('express');
 var app = express();
 
+function logRequest(req, res, next) {
+    console.log('incoming request logged at ' + new Date());
+    next();
+}
+
+app.use(logRequest);
+
 app.get('/', function (req, res) {
     res.send('Hello World!');
 });
