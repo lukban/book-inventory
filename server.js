@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser');
 
 function logRequest(req, res, next) {
     console.log('incoming request logged at ' + new Date());
@@ -7,9 +8,14 @@ function logRequest(req, res, next) {
 }
 
 app.use(logRequest);
+app.use(bodyParser.json());
 
-app.get('/', logRequest, function (req, res) {
+app.get('/', function (req, res) {
     res.send('Hello World!');
+});
+
+app.post('/stock', function(req, res) {
+    res.json({isbn: req.body.isbn, count: req.body.count});
 });
 
 app.use(clientError);
