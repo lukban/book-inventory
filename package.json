@@ -12,7 +12,8 @@
   "dependencies": {
     "body-parser": "1.14.2",
     "express": "4.13.3",
-    "mongodb": "^2.1.2"
+    "lodash": "3.10.1",
+    "mongodb": "2.1.2"
   },
   "devDependencies": {
     "mocha": "2.3.4",
