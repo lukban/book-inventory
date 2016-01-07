@@ -23,8 +23,18 @@ module.exports = function (stockRepository) {
         getAvailability: function (req, res) {
             stockRepository.getCount(req.params.isbn).then(function (result) {
                 if (result !== null) {
-                    if (result > 0)
-                        res.status(200).send("available");
+                    if (result > 0) {
+                        res.status(200)
+                        .format( {
+                            'text/html': function() {
+                                res.send("Book with ISBN " + req.params.isbn );
+                            },
+                            'application/json': function() {
+                                res.json( result.count );
+                            }
+                        });
+
+                    }
                     else
                         res.status(200).send("unavailable");
                 } else {
